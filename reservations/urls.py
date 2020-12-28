@@ -1,7 +1,9 @@
-from django.urls import re_path, path, include
+from django.urls import path, include
 from drf_yasg import openapi
 from drf_yasg.views import get_schema_view
 from rest_framework import permissions
+
+from reservations.views import EmployeeViewSet
 
 
 schema_view = get_schema_view(
@@ -16,6 +18,23 @@ schema_view = get_schema_view(
 
 
 urlpatterns = [
-   path('accounts/', include('django.contrib.auth.urls')),
-   re_path(r'^swagger/$', schema_view.with_ui('swagger', cache_timeout=0), name='swagger-ui'),
+    path(
+        "api/employees/",
+        EmployeeViewSet.as_view({
+            "get": "list",
+            "post": "create",
+        }),
+        name="employee-list",
+    ),
+    path(
+        "api/employees/<int:pk>/",
+        EmployeeViewSet.as_view({
+            "get": "retrieve",
+            "patch": "partial_update",
+            "delete": "destroy",
+        }),
+        name="employee-detail",
+    ),
+    path('accounts/', include('django.contrib.auth.urls')),
+    path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='swagger-ui'),
 ]

@@ -1,3 +1,13 @@
-from django.shortcuts import render
+from django.contrib.auth import get_user_model
+from rest_framework import viewsets
+from rest_framework.permissions import IsAuthenticated
 
-# Create your views here.
+from reservations.serializers import EmployeeSerializer
+
+Employee = get_user_model()
+
+
+class EmployeeViewSet(viewsets.ModelViewSet):
+    queryset = Employee.objects.all()
+    serializer_class = EmployeeSerializer
+    permission_classes = [IsAuthenticated]

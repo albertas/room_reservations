@@ -12,7 +12,7 @@ schema_view = get_schema_view(
       default_version='v1',
       description='This API allows to managed employees, rooms and room reservations',
    ),
-   public=True,
+   public=False,
    permission_classes=(permissions.AllowAny,),
 )
 

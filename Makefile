@@ -6,7 +6,7 @@ container:
 	docker exec -it room_reservations_django_1 bash
 
 test:
-	./manage.py test $(TEST_ME_PLEASE) --settings=reservations.settings.test
+	DJANGO_SETTINGS_MODULE=reservations.settings.test pytest $(TEST_ME_PLEASE)
 
 shell:
 	./manage.py shell_plus

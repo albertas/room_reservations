@@ -7,7 +7,7 @@ from rest_framework.test import APITestCase
 Employee = get_user_model()
 
 
-class SwaggerPageTests(APITestCase):
+class EmployeesAPITests(APITestCase):
     def setUp(self):
         self.employee_data = {
             'username': 'testuser',

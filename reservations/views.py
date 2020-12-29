@@ -2,11 +2,9 @@ from django.contrib.auth import get_user_model
 from rest_framework import viewsets
 
 from reservations.models import MeetingRoom, Reservation
-from reservations.serializers import (
-    EmployeeSerializer,
-    MeetingRoomSerializer,
-    ReservationSerializer
-)
+from reservations.serializers import (EmployeeSerializer,
+                                      MeetingRoomSerializer,
+                                      ReservationSerializer)
 
 Employee = get_user_model()
 

@@ -11,9 +11,9 @@ Employee = get_user_model()
 
 class ReservationsAPITests(APITestCase):
     def setUp(self):
-        self.employee1 = Employee.objects.create_user("Tom")
-        self.employee2 = Employee.objects.create_user("Bob")
-        self.employee3 = Employee.objects.create_user("John")
+        self.employee1 = Employee.objects.create_user("Bob")
+        self.employee2 = Employee.objects.create_user("John")
+        self.employee3 = Employee.objects.create_user("Tom")
 
         self.client.force_authenticate(self.employee1)
 

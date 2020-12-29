@@ -30,7 +30,7 @@ urlpatterns = [
         name="employee-list",
     ),
     path(
-        "api/employees/<int:pk>/",
+        "api/employees/<str:pk>/",
         EmployeeViewSet.as_view(
             {
                 "get": "retrieve",

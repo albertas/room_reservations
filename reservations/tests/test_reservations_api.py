@@ -142,3 +142,35 @@ class ReservationsAPITests(APITestCase):
         resp = self.client.get(url + query)
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         self.assertEqual(len(resp.json()), 0)
+
+    def test_reservation_canceling(self):
+        url = reverse("reservation-list")
+        resp = self.client.get(url)
+        self.assertEqual(len(resp.json()), 1)
+
+        url = reverse("reservation-detail", kwargs={"pk": self.reservation.pk})
+        resp = self.client.patch(url, data={"canceled": True})
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        self.assertEqual(resp.json()["canceled"], True)
+
+        url = reverse("reservation-list")
+        resp = self.client.get(url)
+        self.assertEqual(len(resp.json()), 0)
+
+        query = "?include_canceled=true"
+        resp = self.client.get(url + query)
+        self.assertEqual(len(resp.json()), 1)
+
+    def test_reservation_creation_when_it_overlaps_with_cancelled_reservation(self):
+        list_url = reverse("reservation-list")
+        resp = self.client.post(list_url, data=self.new_reservation_data)
+        self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
+        reservation_pk = resp.json()["id"]
+
+        detail_url = reverse("reservation-detail", kwargs={"pk": reservation_pk})
+        resp = self.client.patch(detail_url, data={"canceled": True})
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        self.assertEqual(resp.json()["canceled"], True)
+
+        resp = self.client.post(list_url, data=self.new_reservation_data)
+        self.assertEqual(resp.status_code, status.HTTP_201_CREATED)

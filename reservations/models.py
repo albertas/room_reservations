@@ -21,3 +21,4 @@ class Reservation(models.Model):
     booked_from = models.DateTimeField()
     booked_till = models.DateTimeField()
     attendees = models.ManyToManyField(Employee, related_name="invited_to")
+    canceled = models.BooleanField(default=False)

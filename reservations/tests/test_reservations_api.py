@@ -27,7 +27,7 @@ class ReservationsAPITests(APITestCase):
             booked_by=self.employee1,
             title="Weekly meeting",
         )
-        self.reservation.attendees.set([self.employee1.pk, self.employee2.pk, self.employee3.pk])
+        self.reservation.attendees.set([self.employee1.pk, self.employee2.pk])
 
         self.new_reservation_data = {
             "room": self.room2.pk,
@@ -35,7 +35,7 @@ class ReservationsAPITests(APITestCase):
             "booked_till": "2020-01-01T11:30:00Z",
             "booked_by": self.employee1.pk,
             "title": "Weekly meeting",
-            "attendees": [self.employee1.pk, self.employee2.pk, self.employee3.pk],
+            "attendees": [self.employee1.pk, self.employee3.pk],
         }
 
     def test_get_reservation_list(self, *args):
@@ -49,9 +49,7 @@ class ReservationsAPITests(APITestCase):
         self.assertEqual(resp.json()[0]["booked_till"], "2020-01-01T10:30:00Z")
         self.assertEqual(resp.json()[0]["booked_by"], self.employee1.pk)
         self.assertEqual(resp.json()[0]["title"], "Weekly meeting")
-        self.assertEqual(
-            resp.json()[0]["attendees"], [self.employee1.pk, self.employee2.pk, self.employee3.pk]
-        )
+        self.assertEqual(resp.json()[0]["attendees"], [self.employee1.pk, self.employee2.pk])
 
     def test_create_reservation(self):
         url = reverse("reservation-list")
@@ -70,9 +68,7 @@ class ReservationsAPITests(APITestCase):
         self.assertEqual(resp.json()["booked_till"], "2020-01-01T10:30:00Z")
         self.assertEqual(resp.json()["booked_by"], self.employee1.pk)
         self.assertEqual(resp.json()["title"], "Weekly meeting")
-        self.assertEqual(
-            resp.json()["attendees"], [self.employee1.pk, self.employee2.pk, self.employee3.pk]
-        )
+        self.assertEqual(resp.json()["attendees"], [self.employee1.pk, self.employee2.pk])
 
     def test_update_reservation(self):
         url = reverse("reservation-detail", kwargs={"pk": self.reservation.pk})
@@ -118,3 +114,31 @@ class ReservationsAPITests(APITestCase):
         reservation_data["booked_till"] = booked_till
         resp = self.client.post(url, data=reservation_data)
         self.assertEqual(resp.status_code, status_code)
+
+    def test_reservation_filter_by_attendee(self):
+        url = reverse("reservation-list")
+        resp = self.client.post(url, data=self.new_reservation_data)
+        self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
+
+        query = f"?attendees={self.employee3.pk}"
+
+        resp = self.client.get(url + query)
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(resp.json()), 1)
+        self.assertIn(self.employee3.pk, resp.json()[0]["attendees"])
+
+    def test_reservation_filter_by_attendees(self):
+        url = reverse("reservation-list")
+        resp = self.client.post(url, data=self.new_reservation_data)
+        self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
+
+        query = f"?attendees={self.employee1.pk},{self.employee3.pk}"
+        resp = self.client.get(url + query)
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(resp.json()), 1)
+        self.assertIn(self.employee3.pk, resp.json()[0]["attendees"])
+
+        query = f"?attendees={self.employee2.pk},{self.employee3.pk}"
+        resp = self.client.get(url + query)
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(resp.json()), 0)

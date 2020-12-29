@@ -1,6 +1,8 @@
 from django.contrib.auth import get_user_model
+from django_filters import rest_framework as filters
 from rest_framework import viewsets
 
+from reservations.filters import ReservationFilter
 from reservations.models import MeetingRoom, Reservation
 from reservations.serializers import (EmployeeSerializer,
                                       MeetingRoomSerializer,
@@ -22,3 +24,5 @@ class MeetingRoomViewSet(viewsets.ModelViewSet):
 class ReservationViewSet(viewsets.ModelViewSet):
     queryset = Reservation.objects.all()
     serializer_class = ReservationSerializer
+    filter_backends = [filters.DjangoFilterBackend]
+    filterset_class = ReservationFilter

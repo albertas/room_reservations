@@ -15,8 +15,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='MeetingRoom',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('number', models.CharField(max_length=32)),
+                ('number', models.CharField(max_length=32, primary_key=True, serialize=False)),
                 ('title', models.CharField(blank=True, max_length=255, null=True)),
                 ('capacity', models.IntegerField(blank=True, null=True)),
             ],

@@ -58,3 +58,4 @@ class EmployeesAPITests(APITestCase):
         url = reverse('employee-detail', kwargs={'pk': self.employee.pk})
         resp = self.client.delete(url)
         self.assertEqual(resp.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertFalse(Employee.objects.filter(pk=self.employee.pk).exists())

@@ -8,14 +8,14 @@ class Employee(AbstractUser):
 
 
 class MeetingRoom(models.Model):
-    number = models.CharField(max_length=32)
+    number = models.CharField(max_length=32, primary_key=True)
     title = models.CharField(max_length=255, null=True, blank=True)
     capacity = models.IntegerField(null=True, blank=True)
-    reservations = models.ManyToManyField(Employee, through='Reservation')
+    reservations = models.ManyToManyField('Employee', through='Reservation')
 
 
 class Reservation(models.Model):
-    room = models.ForeignKey(MeetingRoom, on_delete=models.CASCADE)
+    room = models.ForeignKey('MeetingRoom', on_delete=models.CASCADE)
     booked_by = models.ForeignKey(
         Employee,
         on_delete=models.CASCADE,
@@ -24,4 +24,4 @@ class Reservation(models.Model):
     title = models.CharField(max_length=255, null=True, blank=True)
     booked_from = models.DateTimeField()
     booked_till = models.DateTimeField()
-    attendees = models.ManyToManyField(Employee, related_name='invited_to')
+    attendees = models.ManyToManyField('Employee', related_name='invited_to')

@@ -8,7 +8,10 @@ class ReservationFilter(filters.FilterSet):
     booked_from__gte = filters.DateTimeFilter(field_name="booked_from", lookup_expr="gte")
     booked_till__lte = filters.DateTimeFilter(field_name="booked_till", lookup_expr="lte")
     booked_till__gte = filters.DateTimeFilter(field_name="booked_till", lookup_expr="gte")
-    include_canceled = filters.BooleanFilter(method="include_canceled_filter")
+    include_canceled = filters.BooleanFilter(
+        method="include_canceled_filter",
+        help_text='Canceled reservations are excluded by default, use "true" to include them.',
+    )
     attendees = filters.CharFilter(
         method="attendees_filter",
         help_text=(

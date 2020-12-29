@@ -1,3 +1,4 @@
+from django.urls import reverse
 from django_filters import rest_framework as filters
 
 from reservations.models import Reservation
@@ -35,7 +36,10 @@ class ReservationFilter(filters.FilterSet):
         ]
 
     def __init__(self, data=None, *args, **kwargs):
-        if data is not None and "include_canceled" not in data:
+        is_list_url = kwargs.get("request") is not None and kwargs.get("request").path == reverse(
+            "reservation-list"
+        )
+        if is_list_url and data is not None and "include_canceled" not in data:
             data = data.copy()
             data["include_canceled"] = "false"
         super().__init__(data, *args, **kwargs)

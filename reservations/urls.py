@@ -4,7 +4,7 @@ from drf_yasg.views import get_schema_view
 from rest_framework import permissions
 
 from reservations.views import (EmployeeViewSet, MeetingRoomViewSet,
-                                ReservationViewSet)
+                                ReservationViewSet, index)
 
 schema_view = get_schema_view(
     openapi.Info(
@@ -18,6 +18,7 @@ schema_view = get_schema_view(
 
 
 urlpatterns = [
+    path("", index, name="index"),
     path(
         "api/employees/",
         EmployeeViewSet.as_view(

@@ -1,4 +1,6 @@
 from django.contrib.auth import get_user_model
+from django.shortcuts import HttpResponseRedirect
+from django.urls import reverse
 from django_filters import rest_framework as filters
 from rest_framework import viewsets
 
@@ -26,3 +28,7 @@ class ReservationViewSet(viewsets.ModelViewSet):
     serializer_class = ReservationSerializer
     filter_backends = [filters.DjangoFilterBackend]
     filterset_class = ReservationFilter
+
+
+def index(request):
+    return HttpResponseRedirect(reverse("swagger-ui"))

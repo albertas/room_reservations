@@ -3,7 +3,6 @@ import logging
 from django.contrib.auth import get_user_model
 from django.shortcuts import HttpResponseRedirect
 from django.urls import reverse
-from django_filters import rest_framework as filters
 from rest_framework import viewsets
 
 from reservations.filters import ReservationFilter
@@ -90,7 +89,6 @@ class MeetingRoomViewSet(viewsets.ModelViewSet):
 class ReservationViewSet(viewsets.ModelViewSet):
     queryset = Reservation.objects.all()
     serializer_class = ReservationSerializer
-    filter_backends = [filters.DjangoFilterBackend]
     filterset_class = ReservationFilter
 
     def list(self, request, *args, **kwargs):

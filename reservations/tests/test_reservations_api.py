@@ -2,6 +2,7 @@ from django.contrib.auth import get_user_model
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
+from parameterized import parameterized
 
 from reservations.models import MeetingRoom, Reservation
 
@@ -90,3 +91,36 @@ class ReservationsAPITests(APITestCase):
         resp = self.client.delete(url)
         self.assertEqual(resp.status_code, status.HTTP_204_NO_CONTENT)
         self.assertFalse(Reservation.objects.filter(pk=self.reservation.pk).exists())
+
+    @parameterized.expand((
+        # Try to book the same reservation
+        ['2020-01-01T11:00:00Z', '2020-01-01T11:30:00Z', status.HTTP_400_BAD_REQUEST],
+
+        # Try to book overlaping at the begining reservation
+        ['2020-01-01T11:00:00Z', '2020-01-01T11:10:00Z', status.HTTP_400_BAD_REQUEST],
+
+        # Try to book overlaping at the end reservation
+        ['2020-01-01T11:10:00Z', '2020-01-01T11:30:00Z', status.HTTP_400_BAD_REQUEST],
+
+        # Try to book reservation which is inside already existing reservation
+        ['2020-01-01T11:10:00Z', '2020-01-01T11:20:00Z', status.HTTP_400_BAD_REQUEST],
+
+        # Try to book reservation which contains already existing reservation
+        ['2020-01-01T10:00:00Z', '2020-01-01T12:00:00Z', status.HTTP_400_BAD_REQUEST],
+
+        # Try to book non-overlaping reservation
+        ['2020-01-01T12:00:00Z', '2020-01-01T13:00:00Z', status.HTTP_201_CREATED],
+    ))
+    def test_create_overlapping_reservations(self, booked_from, booked_till, status_code):
+        url = reverse('reservation-list')
+        reservation_data = self.new_reservation_data.copy()
+        reservation_data['booked_from'] = '2020-01-01T11:00:00Z',
+        reservation_data['booked_till'] = '2020-01-01T11:30:00Z',
+        resp = self.client.post(url, data=reservation_data)
+        self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
+
+        # Try to book another reservation for the same room
+        reservation_data['booked_from'] = booked_from
+        reservation_data['booked_till'] = booked_till
+        resp = self.client.post(url, data=reservation_data)
+        self.assertEqual(resp.status_code, status_code)
